@@ -90,3 +90,27 @@ def add_data():
     languages = conn.execute('SELECT id, name FROM ProgrammingLanguages').fetchall()
     conn.close()
     return render_template('add.html', languages=languages)
+
+@dbtour_app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit_framework(id):
+    conn = get_db_connection()
+    
+    if request.method == 'POST':
+        name = request.form['name']
+        language_id = request.form['language_id']
+        type = request.form['type']
+        first_release = request.form['first_release']
+        latest_version = request.form['latest_version']
+        github_stars = request.form['github_stars']
+        
+        conn.execute('UPDATE FrameworksLibraries SET name = ?, language_id = ?, type = ?, first_release = ?, latest_version = ?, github_stars = ? WHERE id = ?',
+                     (name, language_id, type, first_release, latest_version, github_stars, id))
+        conn.commit()
+        return redirect(url_for('index'))
+    
+    framework = conn.execute('SELECT * FROM FrameworksLibraries WHERE id = ?', (id,)).fetchone()
+    languages = conn.execute('SELECT * FROM ProgrammingLanguages').fetchall()
+    
+    conn.close()
+    
+    return render_template('edit.html', framework=framework, languages=languages)

@@ -1,50 +1,50 @@
 {% extends "base.html" %}
 
-{% block title %}Add New Framework/Library{% endblock %}
+{% block title %}Edit Framework{% endblock %}
 
 {% block content %}
 <div class="px-4 py-6 sm:px-0">
-    <h1 class="text-3xl font-bold mb-8 text-gray-100">Add New Framework/Library</h1>
+    <h1 class="text-3xl font-bold mb-8 text-gray-100">Edit Framework: {{ framework['name'] }}</h1>
     
     <div class="bg-dark-secondary shadow overflow-hidden sm:rounded-lg">
         <form method="post" class="space-y-6 p-6">
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-300">Name:</label>
-                <input type="text" id="name" name="name" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
+                <input type="text" id="name" name="name" value="{{ framework['name'] }}" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
             </div>
             
             <div>
                 <label for="language_id" class="block text-sm font-medium text-gray-300">Language:</label>
                 <select id="language_id" name="language_id" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-dark-accent bg-dark-accent focus:outline-none focus:ring-light-accent focus:border-light-accent sm:text-sm rounded-md text-gray-300">
                     {% for language in languages %}
-                        <option value="{{ language['id'] }}">{{ language['name'] }}</option>
+                        <option value="{{ language['id'] }}" {% if language['id'] == framework['language_id'] %}selected{% endif %}>{{ language['name'] }}</option>
                     {% endfor %}
                 </select>
             </div>
             
             <div>
                 <label for="type" class="block text-sm font-medium text-gray-300">Type:</label>
-                <input type="text" id="type" name="type" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
+                <input type="text" id="type" name="type" value="{{ framework['type'] }}" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
             </div>
             
             <div>
                 <label for="first_release" class="block text-sm font-medium text-gray-300">First Release Year:</label>
-                <input type="number" id="first_release" name="first_release" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
+                <input type="number" id="first_release" name="first_release" value="{{ framework['first_release'] }}" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
             </div>
             
             <div>
                 <label for="latest_version" class="block text-sm font-medium text-gray-300">Latest Version:</label>
-                <input type="text" id="latest_version" name="latest_version" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
+                <input type="text" id="latest_version" name="latest_version" value="{{ framework['latest_version'] }}" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
             </div>
             
             <div>
                 <label for="github_stars" class="block text-sm font-medium text-gray-300">GitHub Stars:</label>
-                <input type="number" id="github_stars" name="github_stars" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
+                <input type="number" id="github_stars" name="github_stars" value="{{ framework['github_stars'] }}" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
             </div>
             
             <div>
                 <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-light-accent hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-accent transition-colors duration-200">
-                    Add Framework/Library
+                    Save Changes
                 </button>
             </div>
         </form>
