@@ -13,6 +13,8 @@ def index():
     
     language_filter = request.args.get('language', 'All')
     type_filter = request.args.get('type', 'All')
+    sort = request.args.get('sort', 'f.name')
+    order = request.args.get('order', 'asc')
     
     page = request.args.get('page', 1, type=int)
     per_page = 10
@@ -31,13 +33,24 @@ def index():
     elif type_filter != 'All':
         query += f" WHERE f.type = '{type_filter}'"
     
+    # Add sorting
+    sort_columns = {
+        'name': 'f.name',
+        'type': 'f.type',
+        'language_name': 'p.name',
+        'latest_version': 'f.latest_version',
+        'github_stars': 'f.github_stars'
+    }
+    sort_column = sort_columns.get(sort, 'f.name')
+    query += f" ORDER BY {sort_column} {'DESC' if order == 'desc' else 'ASC'}"
+    
     query += f" LIMIT {per_page} OFFSET {offset}"
     
     frameworks = conn.execute(query).fetchall()
     
     count_query = "SELECT COUNT(*) as total FROM FrameworksLibraries f JOIN ProgrammingLanguages p ON f.language_id = p.id"
     if language_filter != 'All' or type_filter != 'All':
-        count_query += " WHERE " + query.split("WHERE", 1)[1].split("LIMIT", 1)[0]
+        count_query += " WHERE " + query.split("WHERE", 1)[1].split("ORDER BY", 1)[0]
     
     total = conn.execute(count_query).fetchone()['total']
     total_pages = (total - 1) // per_page + 1
@@ -47,9 +60,12 @@ def index():
     
     conn.close()
     
+    # Reverse the order for the next click
+    next_order = 'asc' if order == 'desc' else 'desc'
+    
     return render_template('index.html', frameworks=frameworks, languages=languages, types=types,
                            selected_language=language_filter, selected_type=type_filter,
-                           page=page, total_pages=total_pages)
+                           page=page, total_pages=total_pages, sort=sort, order=next_order)
 
 @dbtour_app.route('/add', methods=['GET', 'POST'])
 def add_data():
