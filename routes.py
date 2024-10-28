@@ -89,7 +89,6 @@ def add_data():
         latest_version = request.form['latest_version']
         github_stars = request.form['github_stars']
         
-        ## insert the new framework into the database
         conn.execute('INSERT INTO FrameworksLibraries (name, language_id, type, first_release, latest_version, github_stars) VALUES (?, ?, ?, ?, ?, ?)',
                      (name, language_id, type, first_release, latest_version, github_stars))
         conn.commit()
@@ -99,8 +98,9 @@ def add_data():
     
     conn = get_db_connection()
     languages = conn.execute('SELECT id, name FROM ProgrammingLanguages').fetchall()
+    types = conn.execute('SELECT DISTINCT type FROM FrameworksLibraries').fetchall()
     conn.close()
-    return render_template('add.html', languages=languages)
+    return render_template('add.html', languages=languages, types=types)
 
 @dbtour_app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_framework(id):
