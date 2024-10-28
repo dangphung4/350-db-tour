@@ -11,6 +11,7 @@ def get_db_connection():
 def index():
     conn = get_db_connection()
     
+    # get params from url
     language_filter = request.args.get('language', 'All')
     type_filter = request.args.get('type', 'All')
     sort = request.args.get('sort', 'f.name')
@@ -33,34 +34,43 @@ def index():
     elif type_filter != 'All':
         query += f" WHERE f.type = '{type_filter}'"
     
-    # Add sorting
-    sort_columns = {
-        'name': 'f.name',
-        'type': 'f.type',
-        'language_name': 'p.name',
-        'latest_version': 'f.latest_version',
-        'github_stars': 'f.github_stars'
-    }
-    sort_column = sort_columns.get(sort, 'f.name')
+    # sort columns
+    if sort == 'name':
+        sort_column = 'f.name'
+    elif sort == 'type':
+        sort_column = 'f.type'
+    elif sort == 'language_name':
+        sort_column = 'p.name'
+    elif sort == 'latest_version':
+        sort_column = 'f.latest_version'
+    elif sort == 'github_stars':
+        sort_column = 'f.github_stars'
+    else:
+        sort_column = 'f.name'  # default sort column
+    
+    # db command to sort
     query += f" ORDER BY {sort_column} {'DESC' if order == 'desc' else 'ASC'}"
     
+    # db command for pagination
     query += f" LIMIT {per_page} OFFSET {offset}"
-    
     frameworks = conn.execute(query).fetchall()
     
+    # count total rows
     count_query = "SELECT COUNT(*) as total FROM FrameworksLibraries f JOIN ProgrammingLanguages p ON f.language_id = p.id"
     if language_filter != 'All' or type_filter != 'All':
         count_query += " WHERE " + query.split("WHERE", 1)[1].split("ORDER BY", 1)[0]
     
+    # get total rows
     total = conn.execute(count_query).fetchone()['total']
     total_pages = (total - 1) // per_page + 1
     
+    #get languages for dropdown
     languages = conn.execute("SELECT DISTINCT name FROM ProgrammingLanguages").fetchall()
     types = conn.execute("SELECT DISTINCT type FROM FrameworksLibraries").fetchall()
     
     conn.close()
     
-    # Reverse the order for the next click
+    # when click again, reverse the order
     next_order = 'asc' if order == 'desc' else 'desc'
     
     return render_template('index.html', frameworks=frameworks, languages=languages, types=types,
@@ -79,6 +89,7 @@ def add_data():
         latest_version = request.form['latest_version']
         github_stars = request.form['github_stars']
         
+        ## insert the new framework into the database
         conn.execute('INSERT INTO FrameworksLibraries (name, language_id, type, first_release, latest_version, github_stars) VALUES (?, ?, ?, ?, ?, ?)',
                      (name, language_id, type, first_release, latest_version, github_stars))
         conn.commit()
@@ -103,11 +114,13 @@ def edit_framework(id):
         latest_version = request.form['latest_version']
         github_stars = request.form['github_stars']
         
+        ## update the framework using params from the form
         conn.execute('UPDATE FrameworksLibraries SET name = ?, language_id = ?, type = ?, first_release = ?, latest_version = ?, github_stars = ? WHERE id = ?',
                      (name, language_id, type, first_release, latest_version, github_stars, id))
         conn.commit()
         return redirect(url_for('index'))
     
+    ## get the framework to edit and get languages for dropdown
     framework = conn.execute('SELECT * FROM FrameworksLibraries WHERE id = ?', (id,)).fetchone()
     languages = conn.execute('SELECT * FROM ProgrammingLanguages').fetchall()
     
