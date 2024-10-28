@@ -1,6 +1,9 @@
 from flask import render_template, request, redirect, url_for
 from dbtour import dbtour_app
 import sqlite3
+import redis
+
+redis_client = redis.Redis(db=9, decode_responses=True)
 
 def get_db_connection():
     conn = sqlite3.connect('huge.db')
@@ -48,10 +51,7 @@ def index():
     else:
         sort_column = 'f.name'  # default sort column
     
-    # db command to sort
     query += f" ORDER BY {sort_column} {'DESC' if order == 'desc' else 'ASC'}"
-    
-    # db command for pagination
     query += f" LIMIT {per_page} OFFSET {offset}"
     frameworks = conn.execute(query).fetchall()
     
@@ -60,22 +60,77 @@ def index():
     if language_filter != 'All' or type_filter != 'All':
         count_query += " WHERE " + query.split("WHERE", 1)[1].split("ORDER BY", 1)[0]
     
-    # get total rows
     total = conn.execute(count_query).fetchone()['total']
     total_pages = (total - 1) // per_page + 1
     
-    #get languages for dropdown
     languages = conn.execute("SELECT DISTINCT name FROM ProgrammingLanguages").fetchall()
     types = conn.execute("SELECT DISTINCT type FROM FrameworksLibraries").fetchall()
+    # get all framework names for the learning queue
+    framework_names = conn.execute("SELECT name FROM FrameworksLibraries").fetchall()
+    
+    # get Redis data
+    learning_queue = redis_client.lrange('tech:learning_queue', 0, -1)
+    trending_tech = redis_client.zrevrange('tech:trending', 0, 4, withscores=True)
     
     conn.close()
     
-    # when click again, reverse the order
     next_order = 'asc' if order == 'desc' else 'desc'
     
-    return render_template('index.html', frameworks=frameworks, languages=languages, types=types,
-                           selected_language=language_filter, selected_type=type_filter,
-                           page=page, total_pages=total_pages, sort=sort, order=next_order)
+    return render_template('index.html', 
+                         frameworks=frameworks, 
+                         languages=languages, 
+                         types=types,
+                         framework_names=framework_names,
+                         selected_language=language_filter, 
+                         selected_type=type_filter,
+                         page=page, 
+                         total_pages=total_pages, 
+                         sort=sort, 
+                         order=next_order,
+                         learning_queue=learning_queue,
+                         trending_tech=trending_tech)
+
+@dbtour_app.route('/add_to_queue', methods=['POST'])
+def add_to_queue():
+    technology = request.form.get('technology')
+    if technology:
+        redis_client.rpush('tech:learning_queue', technology)
+    return redirect(url_for('index'))
+
+@dbtour_app.route('/remove_from_queue', methods=['POST'])
+def remove_from_queue():
+    technology = request.form.get('technology')
+    if technology:
+        redis_client.lrem('tech:learning_queue', 1, technology)
+    return redirect(url_for('index'))
+
+@dbtour_app.route('/mark_trending', methods=['POST'])
+def mark_trending():
+    technology = request.form.get('technology')
+    if technology:
+        redis_client.zincrby('tech:trending', 1, technology)
+    return redirect(url_for('index'))
+
+@dbtour_app.route('/add_trending', methods=['POST'])
+def add_trending():
+    technology = request.form.get('technology')
+    initial_score = request.form.get('score', 1, type=int)  # default score of 1 if not provided
+    
+    if technology:
+        redis_client.zadd('tech:trending', {technology: initial_score})
+    
+    return redirect(url_for('index'))
+
+@dbtour_app.route('/decrease_trending', methods=['POST'])
+def decrease_trending():
+    technology = request.form.get('technology')
+    if technology:
+        redis_client.zincrby('tech:trending', -1, technology)
+        # Remove if score drops to 0 or below
+        score = redis_client.zscore('tech:trending', technology)
+        if score <= 0:
+            redis_client.zrem('tech:trending', technology)
+    return redirect(url_for('index'))
 
 @dbtour_app.route('/add', methods=['GET', 'POST'])
 def add_data():
@@ -128,3 +183,4 @@ def edit_framework(id):
     conn.close()
     
     return render_template('edit.html', framework=framework, languages=languages, types=types)
+

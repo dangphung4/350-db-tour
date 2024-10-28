@@ -4,136 +4,234 @@
 
 {% block content %}
 <div class="px-4 py-6 sm:px-0">
-    <h1 class="text-3xl font-bold mb-8 text-white">Frameworks and Libraries</h1>
-    
-    
-    <div class="bg-dark-secondary shadow overflow-hidden sm:rounded-lg">
-        <table class="min-w-full divide-y divide-dark-accent">
-            <thead class="bg-dark-accent">
-                <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        <a href="{{ url_for('index', sort='name', order=order, language=selected_language, type=selected_type) }}" 
-                           class="text-zinc-400 hover:text-white flex items-center space-x-1 transition-colors duration-200">
-                            <span>Name</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </a>
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        <a href="{{ url_for('index', sort='type', order=order, language=selected_language, type=selected_type) }}" 
-                           class="text-zinc-400 hover:text-white flex items-center space-x-1 transition-colors duration-200">
-                            <span>Type</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </a>
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        <a href="{{ url_for('index', sort='language_name', order=order, language=selected_language, type=selected_type) }}" 
-                           class="text-zinc-400 hover:text-white flex items-center space-x-1 transition-colors duration-200">
-                            <span>Language</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </a>
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        <a href="{{ url_for('index', sort='latest_version', order=order, language=selected_language, type=selected_type) }}" 
-                           class="text-zinc-400 hover:text-white flex items-center space-x-1 transition-colors duration-200">
-                            <span>Latest Version</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </a>
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
-                        <a href="{{ url_for('index', sort='github_stars', order=order, language=selected_language, type=selected_type) }}" 
-                           class="text-zinc-400 hover:text-white flex items-center space-x-1 transition-colors duration-200">
-                            <span>GitHub Stars</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </a>
-                    </th>
-                </tr>
-            </thead>
-            <tbody class="bg-dark-secondary divide-y divide-dark-accent">
-                {% for framework in frameworks %}
-                <tr class="hover:bg-dark-accent transition-colors duration-200">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <a href="{{ url_for('edit_framework', id=framework['id']) }}" 
-                           class="text-zinc-400 hover:text-white hover:underline flex items-center space-x-1 group transition-all duration-200">
-                            <span>{{ framework['name'] }}</span>
-                            <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" 
-                                 fill="none" 
-                                 stroke="currentColor" 
-                                 viewBox="0 0 24 24">
-                                <path stroke-linecap="round" 
-                                      stroke-linejoin="round" 
-                                      stroke-width="2" 
-                                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                            </svg>
-                        </a>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-300">{{ framework['type'] }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-300">{{ framework['language_name'] }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-300">{{ framework['latest_version'] }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-300">{{ framework['github_stars'] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <!-- Main Content (SQLite data) - Takes up 3 columns -->
+        <div class="lg:col-span-3">
+            <h1 class="text-3xl font-bold mb-8 text-white">Frameworks and Libraries</h1>
+            
+            <!-- Filters Form -->
+            <form method="get" action="{{ url_for('index') }}" class="mb-8">
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <div class="flex-1">
+                        <label for="language" class="block text-sm font-medium text-gray-300 mb-1">Language:</label>
+                        <select name="language" id="language" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-dark-accent border-dark-secondary focus:outline-none focus:ring-light-accent focus:border-light-accent sm:text-sm rounded-md text-gray-300">
+                            <option value="All" {% if selected_language == 'All' %}selected{% endif %}>All</option>
+                            {% for language in languages %}
+                                <option value="{{ language['name'] }}" {% if selected_language == language['name'] %}selected{% endif %}>
+                                    {{ language['name'] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="flex-1">
+                        <label for="type" class="block text-sm font-medium text-gray-300 mb-1">Type:</label>
+                        <select name="type" id="type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-dark-accent border-dark-secondary focus:outline-none focus:ring-light-accent focus:border-light-accent sm:text-sm rounded-md text-gray-300">
+                            <option value="All" {% if selected_type == 'All' %}selected{% endif %}>All</option>
+                            {% for type in types %}
+                                <option value="{{ type['type'] }}" {% if selected_type == type['type'] %}selected{% endif %}>
+                                    {{ type['type'] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full sm:w-auto bg-light-accent text-white px-4 py-2 rounded-md hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-accent transition-colors duration-200">
+                            Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Main Table -->
+            <div class="bg-dark-secondary shadow overflow-hidden sm:rounded-lg mb-6">
+                <table class="min-w-full divide-y divide-dark-accent">
+                    <thead class="bg-dark-accent">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                <a href="{{ url_for('index', sort='name', order=order, language=selected_language, type=selected_type) }}" 
+                                   class="text-zinc-400 hover:text-white flex items-center space-x-1 transition-colors duration-200">
+                                    <span>Name</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </a>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                <a href="{{ url_for('index', sort='type', order=order, language=selected_language, type=selected_type) }}" 
+                                   class="text-zinc-400 hover:text-white flex items-center space-x-1 transition-colors duration-200">
+                                    <span>Type</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </a>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                <a href="{{ url_for('index', sort='language_name', order=order, language=selected_language, type=selected_type) }}" 
+                                   class="text-zinc-400 hover:text-white flex items-center space-x-1 transition-colors duration-200">
+                                    <span>Language</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </a>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                <a href="{{ url_for('index', sort='latest_version', order=order, language=selected_language, type=selected_type) }}" 
+                                   class="text-zinc-400 hover:text-white flex items-center space-x-1 transition-colors duration-200">
+                                    <span>Latest Version</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </a>
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                <a href="{{ url_for('index', sort='github_stars', order=order, language=selected_language, type=selected_type) }}" 
+                                   class="text-zinc-400 hover:text-white flex items-center space-x-1 transition-colors duration-200">
+                                    <span>GitHub Stars</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-dark-secondary divide-y divide-dark-accent">
+                        {% for framework in frameworks %}
+                        <tr class="hover:bg-dark-accent transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{{ url_for('edit_framework', id=framework['id']) }}" 
+                                   class="text-zinc-400 hover:text-white hover:underline flex items-center space-x-1 group transition-all duration-200">
+                                    <span>{{ framework['name'] }}</span>
+                                    <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" 
+                                         fill="none" 
+                                         stroke="currentColor" 
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" 
+                                              stroke-linejoin="round" 
+                                              stroke-width="2" 
+                                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-300">{{ framework['type'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-300">{{ framework['language_name'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-300">{{ framework['latest_version'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-300">{{ framework['github_stars'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-       <form method="get" action="{{ url_for('index') }}" class="mb-8">
-        <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-            <div class="flex-1">
-                <label for="language" class="block text-sm font-medium text-gray-300 mb-1">Language:</label>
-                <select name="language" id="language" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-dark-accent border-dark-secondary focus:outline-none focus:ring-light-accent focus:border-light-accent sm:text-sm rounded-md text-gray-300">
-                    <option value="All" {% if selected_language == 'All' %}selected{% endif %}>All</option>
-                    {% for language in languages %}
-                        <option value="{{ language['name'] }}" {% if selected_language == language['name'] %}selected{% endif %}>
-                            {{ language['name'] }}
-                        </option>
-                    {% endfor %}
-                </select>
+            <!-- Pagination -->
+            <div class="mt-4 flex justify-center">
+                {% if page > 1 %}
+                    <a href="{{ url_for('index', page=page-1, language=selected_language, type=selected_type, sort=sort, order=order) }}" class="px-3 py-2 bg-dark-accent text-gray-300 rounded-l hover:bg-light-accent hover:text-white transition-colors duration-200">Previous</a>
+                {% endif %}
+                
+                <span class="px-3 py-2 bg-dark-secondary text-gray-300">Page {{ page }} of {{ total_pages }}</span>
+                
+                {% if page < total_pages %}
+                    <a href="{{ url_for('index', page=page+1, language=selected_language, type=selected_type, sort=sort, order=order) }}" class="px-3 py-2 bg-dark-accent text-gray-300 rounded-r hover:bg-light-accent hover:text-white transition-colors duration-200">Next</a>
+                {% endif %}
             </div>
-            
-            <div class="flex-1">
-                <label for="type" class="block text-sm font-medium text-gray-300 mb-1">Type:</label>
-                <select name="type" id="type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base bg-dark-accent border-dark-secondary focus:outline-none focus:ring-light-accent focus:border-light-accent sm:text-sm rounded-md text-gray-300">
-                    <option value="All" {% if selected_type == 'All' %}selected{% endif %}>All</option>
-                    {% for type in types %}
-                        <option value="{{ type['type'] }}" {% if selected_type == type['type'] %}selected{% endif %}>
-                            {{ type['type'] }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="flex items-end">
-                <button type="submit" class="w-full sm:w-auto bg-light-accent text-white px-4 py-2 rounded-md hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-accent transition-colors duration-200">
-                    Filter
-                </button>
+
+            <!-- Add New Button -->
+            <div class="mt-4 flex justify-center space-x-4">
+                <a href="{{ url_for('add_data') }}" class="px-4 py-2 bg-light-accent text-white rounded-md hover:bg-opacity-80 transition-colors duration-200">Add New Framework/Library</a>
             </div>
         </div>
-    </form>
-    
-    <div class="mt-4 flex justify-center space-x-4">
-        <a href="{{ url_for('add_data') }}" class="px-4 py-2 bg-light-accent text-white rounded-md hover:bg-opacity-80 transition-colors duration-200">Add New Framework/Library</a>
-    </div>
-    
-    <div class="mt-4 flex justify-center">
-        {% if page > 1 %}
-            <a href="{{ url_for('index', page=page-1, language=selected_language, type=selected_type, sort=sort, order=order) }}" class="px-3 py-2 bg-dark-accent text-gray-300 rounded-l hover:bg-light-accent hover:text-white transition-colors duration-200">Previous</a>
-        {% endif %}
-        
-        <span class="px-3 py-2 bg-dark-secondary text-gray-300">Page {{ page }} of {{ total_pages }}</span>
-        
-        {% if page < total_pages %}
-            <a href="{{ url_for('index', page=page+1, language=selected_language, type=selected_type, sort=sort, order=order) }}" class="px-3 py-2 bg-dark-accent text-gray-300 rounded-r hover:bg-light-accent hover:text-white transition-colors duration-200">Next</a>
-        {% endif %}
+
+        <!-- Redis Sidebar -->
+        <div class="lg:col-span-1 space-y-6">
+            <!-- Learning Queue -->
+            <div class="bg-dark-secondary shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-dark-accent">
+                    <h3 class="text-lg font-medium text-white">Learning Queue</h3>
+                    <p class="mt-1 text-sm text-gray-400">Technologies you plan to learn</p>
+                </div>
+                <div class="divide-y divide-dark-accent">
+                    {% for tech in learning_queue %}
+                    <div class="px-4 py-3 flex justify-between items-center">
+                        <span class="text-sm text-gray-300">{{ tech }}</span>
+                        <form method="POST" action="{{ url_for('remove_from_queue') }}" class="inline">
+                            <input type="hidden" name="technology" value="{{ tech }}">
+                            <button type="submit" class="text-red-400 hover:text-red-300 text-sm transition-colors duration-200">
+                                Remove
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                    <div class="px-4 py-4 bg-dark-accent">
+                        <form method="POST" action="{{ url_for('add_to_queue') }}" class="flex space-x-2">
+                            <select name="technology" class="flex-1 bg-dark-secondary text-gray-300 rounded-md border-dark-accent focus:border-light-accent focus:ring-light-accent">
+                                {% for framework in framework_names %}
+                                    <option value="{{ framework['name'] }}">{{ framework['name'] }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="px-3 py-1 bg-light-accent text-white rounded-md hover:bg-opacity-80 transition-colors duration-200">
+                                Add
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trending Technologies -->
+            <div class="bg-dark-secondary shadow overflow-hidden sm:rounded-lg">
+                <div class="px-4 py-5 sm:px-6 border-b border-dark-accent">
+                    <h3 class="text-lg font-medium text-white">Trending</h3>
+                    <p class="mt-1 text-sm text-gray-400">Most popular technologies</p>
+                </div>
+                <div class="divide-y divide-dark-accent">
+                    {% for tech, score in trending_tech %}
+                    <div class="px-4 py-3 flex justify-between items-center group">
+                        <span class="text-sm text-gray-300">{{ tech }}</span>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-sm text-gray-400">{{ score|int }} points</span>
+                            <div class="flex space-x-1">
+                                <form method="POST" action="{{ url_for('mark_trending') }}" class="inline">
+                                    <input type="hidden" name="technology" value="{{ tech }}">
+                                    <button type="submit" class="opacity-0 group-hover:opacity-100 text-light-accent hover:text-white transition-all duration-200">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ url_for('decrease_trending') }}" class="inline">
+                                    <input type="hidden" name="technology" value="{{ tech }}">
+                                    <button type="submit" class="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-all duration-200">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="px-4 py-4 bg-dark-accent">
+                        <form method="POST" action="{{ url_for('add_trending') }}" class="flex space-x-2">
+                            <select name="technology" class="flex-1 bg-dark-secondary text-gray-300 rounded-md border-dark-accent focus:border-light-accent focus:ring-light-accent">
+                                {% for framework in framework_names %}
+                                    <option value="{{ framework['name'] }}">{{ framework['name'] }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="number" 
+                                   name="score" 
+                                   value="1" 
+                                   min="1" 
+                                   class="w-20 bg-dark-secondary text-gray-300 rounded-md border-dark-accent focus:border-light-accent focus:ring-light-accent"
+                                   placeholder="Score">
+                            <button type="submit" class="px-3 py-1 bg-light-accent text-white rounded-md hover:bg-opacity-80 transition-colors duration-200">
+                                Add
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
