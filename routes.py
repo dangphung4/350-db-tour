@@ -123,7 +123,8 @@ def edit_framework(id):
     ## get the framework to edit and get languages for dropdown
     framework = conn.execute('SELECT * FROM FrameworksLibraries WHERE id = ?', (id,)).fetchone()
     languages = conn.execute('SELECT * FROM ProgrammingLanguages').fetchall()
+    types = conn.execute('SELECT DISTINCT type FROM FrameworksLibraries').fetchall()
     
     conn.close()
     
-    return render_template('edit.html', framework=framework, languages=languages)
+    return render_template('edit.html', framework=framework, languages=languages, types=types)

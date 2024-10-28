@@ -24,7 +24,11 @@
             
             <div>
                 <label for="type" class="block text-sm font-medium text-gray-300">Type:</label>
-                <input type="text" id="type" name="type" value="{{ framework['type'] }}" required class="mt-1 focus:ring-light-accent focus:border-light-accent block w-full shadow-sm sm:text-sm border-dark-accent bg-dark-accent text-gray-300 rounded-md">
+                <select id="type" name="type" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-dark-accent bg-dark-accent focus:outline-none focus:ring-light-accent focus:border-light-accent sm:text-sm rounded-md text-gray-300">
+                    {% for type in types %}
+                        <option value="{{ type['type'] }}" {% if type['type'] == framework['type'] %}selected{% endif %}>{{ type['type'] }}</option>
+                    {% endfor %}
+                </select>
             </div>
             
             <div>
