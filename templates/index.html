@@ -5,11 +5,9 @@
 {% block content %}
 <div class="px-4 py-6 sm:px-0">
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <!-- Main Content (SQLite data) - Takes up 3 columns -->
         <div class="lg:col-span-3">
             <h1 class="text-3xl font-bold mb-8 text-white">Frameworks and Libraries</h1>
             
-            <!-- Filters Form -->
             <form method="get" action="{{ url_for('index') }}" class="mb-8">
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                     <div class="flex-1">
@@ -44,7 +42,6 @@
                 </div>
             </form>
             
-            <!-- Main Table -->
             <div class="bg-dark-secondary shadow overflow-hidden sm:rounded-lg mb-6">
                 <table class="min-w-full divide-y divide-dark-accent">
                     <thead class="bg-dark-accent">
@@ -124,7 +121,6 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
             <div class="mt-4 flex justify-center">
                 {% if page > 1 %}
                     <a href="{{ url_for('index', page=page-1, language=selected_language, type=selected_type, sort=sort, order=order) }}" class="px-3 py-2 bg-dark-accent text-gray-300 rounded-l hover:bg-light-accent hover:text-white transition-colors duration-200">Previous</a>
@@ -137,15 +133,12 @@
                 {% endif %}
             </div>
 
-            <!-- Add New Button -->
             <div class="mt-4 flex justify-center space-x-4">
                 <a href="{{ url_for('add_data') }}" class="px-4 py-2 bg-light-accent text-white rounded-md hover:bg-opacity-80 transition-colors duration-200">Add New Framework/Library</a>
             </div>
         </div>
 
-        <!-- Redis Sidebar -->
         <div class="lg:col-span-1 space-y-6">
-            <!-- Learning Queue -->
             <div class="bg-dark-secondary shadow overflow-hidden sm:rounded-lg">
                 <div class="px-4 py-5 sm:px-6 border-b border-dark-accent">
                     <h3 class="text-lg font-medium text-white">Learning Queue</h3>
@@ -178,7 +171,6 @@
                 </div>
             </div>
 
-            <!-- Trending Technologies -->
             <div class="bg-dark-secondary shadow overflow-hidden sm:rounded-lg">
                 <div class="px-4 py-5 sm:px-6 border-b border-dark-accent">
                     <h3 class="text-lg font-medium text-white">Trending</h3>

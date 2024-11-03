@@ -126,7 +126,7 @@ def decrease_trending():
     technology = request.form.get('technology')
     if technology:
         redis_client.zincrby('tech:trending', -1, technology)
-        # Remove if score drops to 0 or below
+        # remove if score drops to 0 or below
         score = redis_client.zscore('tech:trending', technology)
         if score <= 0:
             redis_client.zrem('tech:trending', technology)
