@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <h2 class="text-2xl font-bold mb-6 text-white">Technology Items</h2>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="mb-6 bg-dark-secondary p-4 rounded-lg">
+        <form method="GET" class="flex space-x-4">
+            <input type="text" name="key" placeholder="Key" value="{{ filter_key }}"
+                   class="bg-dark-accent text-gray-300 rounded px-3 py-2">
+            <input type="text" name="value" placeholder="Value" value="{{ filter_value }}"
+                   class="bg-dark-accent text-gray-300 rounded px-3 py-2">
+            <button type="submit" class="bg-light-accent text-white px-4 py-2 rounded">
+                Filter
+            </button>
+        </form>
+    </div>
+
+    <div class="mb-6 bg-dark-secondary p-4 rounded-lg">
+        <form method="POST" action="{{ url_for('add_item') }}" class="flex space-x-4">
+            <input type="text" 
+                   name="name" 
+                   placeholder="Title" 
+                   required
+                   class="flex-1 bg-dark-accent text-gray-300 rounded px-3 py-2">
+            <button type="submit" 
+                    class="bg-light-accent text-white px-4 py-2 rounded hover:bg-opacity-80 transition-colors duration-200">
+                Add Item
+            </button>
+        </form>
+    </div>
+
+    <div class="bg-dark-secondary rounded-lg shadow">
+        <div class="divide-y divide-dark-accent">
+            {% for item in items %}
+            <div class="p-4">
+                <a href="{{ url_for('edit_item', item_id=item._id) }}" 
+                   class="text-zinc-400 hover:text-white hover:underline">
+                    {{ item.name }} - {{ item.technology }}
+                </a>
+                <div class="text-sm text-gray-400 mt-1">
+                    Version: {{ item.version }} | Type: {{ item.type }}
+                </div>
+                
+                <div class="mt-2">
+                    <h4 class="text-sm font-semibold text-gray-300">Relationships:</h4>
+                    {% if item.relationships %}
+                        <ul class="list-disc list-inside text-sm text-gray-400">
+                        {% for rel in item.relationships %}
+                            <li>
+                                {{ rel.type }}: 
+                                <a href="{{ url_for('edit_item', item_id=rel.target_id) }}"
+                                   class="text-zinc-400 hover:text-white hover:underline">
+                                    {{ rel.target_name }}
+                                </a>
+                                <form method="POST" action="{{ url_for('remove_relationship', item_id=item._id) }}" 
+                                      class="inline ml-2">
+                                    <input type="hidden" name="relationship_id" value="{{ rel.id }}">
+                                    <button type="submit" 
+                                            class="text-red-500 hover:text-red-400 text-xs">
+                                        Remove
+                                    </button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                    
+                    <form method="POST" action="{{ url_for('add_relationship', item_id=item._id) }}" 
+                          class="mt-2 flex space-x-2">
+                        <select name="relationship_type" 
+                                class="bg-dark-accent text-gray-300 rounded px-2 py-1 text-sm">
+                            <option value="requires">Requires</option>
+                            <option value="alternative_to">Alternative To</option>
+                            <option value="works_with">Works With</option>
+                            <option value="extends">Extends</option>
+                        </select>
+                        <select name="target_id" 
+                                class="bg-dark-accent text-gray-300 rounded px-2 py-1 text-sm">
+                            {% for other_item in items if other_item._id != item._id %}
+                                <option value="{{ other_item._id }}">{{ other_item.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" 
+                                class="bg-light-accent text-white px-2 py-1 rounded text-sm">
+                            Add Relationship
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- <div class="mt-6">
+        <form method="POST" action="{{ url_for('reset_items') }}" class="inline">
+            <button type="submit" 
+                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
+                Reset Database
+            </button>
+        </form>
+    </div> -->
+</div>
+{% endblock %} 

@@ -6,6 +6,13 @@
 <div class="px-4 py-6 sm:px-0">
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div class="lg:col-span-3">
+            <nav class="mb-8 flex space-x-4">
+                <a href="{{ url_for('list_items') }}" 
+                   class="px-4 py-2 bg-light-accent text-white rounded-md hover:bg-opacity-80 transition-colors duration-200">
+                    MongoDB Items
+                </a>
+            </nav>
+
             <h1 class="text-3xl font-bold mb-8 text-white">Frameworks and Libraries</h1>
             
             <form method="get" action="{{ url_for('index') }}" class="mb-8">

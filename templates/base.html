@@ -23,14 +23,16 @@
     </script>
 </head>
 <body class="bg-dark-bg text-zinc-100 min-h-screen flex flex-col">
-
-
     <main class="flex-grow">
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            {% if request.endpoint == 'list_items' %}
+            <nav class="mb-4">
+                <a href="{{ url_for('index') }}" class="text-gray-300 hover:text-white">Home</a>
+        </nav>
+            {% endif %}
             {% block content %}
             {% endblock %}
         </div>
     </main>
-
 </body>
 </html>

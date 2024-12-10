@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <h2 class="text-2xl font-bold mb-6 text-white">Edit Item: {{ item.name }}</h2>
+
+    <div class="bg-dark-secondary rounded-lg shadow p-6">
+        <form method="POST" class="space-y-4">
+            {% for key, value in item.items() %}
+                {% if key != '_id' %}
+                <div>
+                    <label class="block text-sm font-medium text-gray-300">{{ key }}</label>
+                    <input type="text" name="{{ key }}" value="{{ value }}"
+                           class="mt-1 block w-full bg-dark-accent text-gray-300 rounded-md border-dark-accent">
+                </div>
+                {% endif %}
+            {% endfor %}
+            <button type="submit" class="bg-light-accent text-white px-4 py-2 rounded">
+                Save Changes
+            </button>
+        </form>
+
+        <div class="mt-8 pt-8 border-t border-dark-accent">
+            <h3 class="text-lg font-medium text-white mb-4">Add New Field</h3>
+            <form method="POST" class="flex space-x-4">
+                <input type="text" name="new_key" placeholder="Key"
+                       class="bg-dark-accent text-gray-300 rounded px-3 py-2">
+                <input type="text" name="new_value" placeholder="Value"
+                       class="bg-dark-accent text-gray-300 rounded px-3 py-2">
+                <button type="submit" class="bg-light-accent text-white px-4 py-2 rounded">
+                    Add Field
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 
